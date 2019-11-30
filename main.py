@@ -7,6 +7,9 @@ import tikzplotlib.save as to_tikz
 
 import misc
 
+# Check typing
+# mypy main.py --ignore-missing-imports
+
 if __name__ == '__main__':
     # Init hyperparameters
     epochs = 50
