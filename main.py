@@ -1,7 +1,4 @@
-import torch
 import torch.nn
-import torch.nn.functional as F
-import numpy as np
 import matplotlib.pyplot as plt
 import tikzplotlib.save as to_tikz
 
@@ -21,7 +18,7 @@ if __name__ == '__main__':
     data = misc.get_data(samples=samples)
     # Get generator
     generator = misc.get_generator()
-    # Get discriminatir
+    # Get discriminator
     discriminator = misc.get_discriminator()
     # Init Loss function
     loss = torch.nn.BCELoss()
