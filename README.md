@@ -4,3 +4,4 @@ Small Python script to visualize mode collapse. The script generates a 2d plot o
 These generated plots will be saved in the pdf format and as a latex file.
 
 ![plot](mode_collapse_example.PNG "plot")
+Real distribution in green, generator distribution in red.
