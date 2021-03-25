@@ -1,4 +1,5 @@
 # Mode Collapse Example
+This repository showcases the mode collapse problem of GANs for different loss functions on a 2D toy example distribution.
 
 <table>
   <tr>
@@ -29,8 +30,14 @@
 </table>
 
 ## Installation
+To install all necessary dependencies simply run:
+
+````shell script
+pip install -r requirements.txt
+````
 
 ## Run Examples
+To reproduces the achieved results run the [`main.py`](main.py) script with the corresponding arguments.
 
 |Argument | Default value | Info |
 | --- | :---: | --- |
