@@ -2,12 +2,12 @@
 
 <table>
   <tr>
-    <td> <img src="/plots/hinge.png"  alt="1" width = 600px height = 450px ></td>
-    <td><img src="/plots/hinge.png" alt="2" width = 600px height = 450px></td>
+    <td> <img src="/plots/hinge.gif"  alt="1" width = 600px height = 450px ></td>
+    <td><img src="/plots/hinge.gif" alt="2" width = 600px height = 450px></td>
    </tr> 
    <tr>
-      <td><img src="/plots/hinge.png" alt="3" width = 600px height = 450px></td>
-      <td><img src="/plots/hinge.png" align="right" alt="4" width = 600px height = 450px>
+      <td><img src="/plots/hinge.gif" alt="3" width = 600px height = 450px></td>
+      <td><img src="/plots/hinge.gif" align="right" alt="4" width = 600px height = 450px>
   </td>
   </tr>
 </table>
