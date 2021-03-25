@@ -2,6 +2,12 @@
 
 <table>
   <tr>
+    <td> Standard GAN loss </td>
+    <td> Non-saturating GAN loss </td>
+    <td> Non-saturating GAN loss + top-k </td>
+    <td> Hinge GAN loss </td>
+  </tr> 
+  <tr>
     <td> <img src="/plots/standard.gif"  alt="1" width = 200px height = 150px ></td>
     <td><img src="/plots/non-saturating.gif" alt="2" width = 200px height = 150px></td>
     <td> <img src="/plots/non-saturating_top_k.gif"  alt="3" width = 200px height = 150px ></td>
