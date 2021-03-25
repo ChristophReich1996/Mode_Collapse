@@ -2,12 +2,16 @@
 
 <table>
   <tr>
-    <td> <img src="/plots/hinge.gif"  alt="1" width = 200px height = 150px ></td>
-    <td><img src="/plots/hinge.gif" alt="2" width = 200px height = 150px></td>
+    <td> <img src="/plots/standard.gif"  alt="1" width = 200px height = 150px ></td>
+    <td><img src="/plots/non-saturating.gif" alt="2" width = 200px height = 150px></td>
+    <td> <img src="/plots/non-saturating_top_k.gif"  alt="3" width = 200px height = 150px ></td>
+    <td><img src="/plots/hinge.gif" alt="4" width = 200px height = 150px></td>
   </tr> 
   <tr>
-    <td> <img src="/plots/hinge.gif"  alt="3" width = 200px height = 150px ></td>
-    <td><img src="/plots/hinge.gif" alt="4" width = 200px height = 150px></td>
+    <td> <img src="/plots/wasserstein.gif"  alt="5" width = 200px height = 150px ></td>
+    <td><img src="/plots/wasserstein-gp.gif" alt="6" width = 200px height = 150px></td>
+    <td> <img src="/plots/wasserstein-gp_top_k.gif"  alt="7" width = 200px height = 150px ></td>
+    <td><img src="/plots/least-squares.gif" alt="8" width = 200px height = 150px></td>
   </td>
   </tr>
 </table>
