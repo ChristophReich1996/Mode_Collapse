@@ -14,9 +14,9 @@
     <td><img src="/plots/hinge.gif" alt="4" width = 200px height = 150px></td>
   </tr> 
   <tr>
-    <td> Wasserstein GAN loss + spectral norm </td>
+    <td> Wasserstein GAN loss + spec. norm </td>
     <td> Wasserstein GAN loss + GP </td>
-    <td> Wasserstein GAN loss + GP + top-k </td>
+    <td> Wasserstein GAN loss GP + top-k </td>
     <td> Least squares GAN loss </td>
   </tr> 
   <tr>
