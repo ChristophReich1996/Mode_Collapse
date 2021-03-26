@@ -215,7 +215,6 @@ class LSGANLossGenerator(nn.Module):
         :param discriminator_prediction_fake: (torch.Tensor) Raw discriminator predictions for fake samples
         :return: (torch.Tensor) Generator LSGAN loss
         """
-        # Loss can be computed by utilizing the softplus function since softplus combines both sigmoid and log
         return - 0.5 * (discriminator_prediction_fake - 1.).pow(2).mean()
 
 
