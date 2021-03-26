@@ -23,15 +23,15 @@ def get_generator(latent_size: int, use_spectral_norm: bool) -> nn.Module:
                              spectral_norm(nn.Linear(256, 256, bias=True)),
                              nn.Tanh(),
                              spectral_norm(nn.Linear(256, 2, bias=True)))
-    return nn.Sequential(spectral_norm(nn.Linear(latent_size, 256, bias=True)),
+    return nn.Sequential(nn.Linear(latent_size, 256, bias=True),
                          nn.LeakyReLU(),
-                         spectral_norm(nn.Linear(256, 256, bias=True)),
+                         nn.Linear(256, 256, bias=True),
                          nn.LeakyReLU(),
-                         spectral_norm(nn.Linear(256, 256, bias=True)),
+                         nn.Linear(256, 256, bias=True),
                          nn.LeakyReLU(),
-                         spectral_norm(nn.Linear(256, 256, bias=True)),
+                         nn.Linear(256, 256, bias=True),
                          nn.Tanh(),
-                         spectral_norm(nn.Linear(256, 2, bias=True)))
+                         nn.Linear(256, 2, bias=True))
 
 
 def get_discriminator(use_spectral_norm: bool) -> nn.Module:
