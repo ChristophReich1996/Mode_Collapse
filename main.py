@@ -7,6 +7,8 @@ parser.add_argument('--device', default='cuda', choices=['cpu', 'cuda'], type=st
                     help='Set device to be utilized. cuda or cpu.')
 parser.add_argument('--epochs', default=500, type=int,
                     help='Training epochs to be performed.')
+parser.add_argument('--d_updates', default=1, type=int,
+                    help='Discriminator updates per generator update.')
 parser.add_argument('--plot_frequency', default=10, type=int,
                     help='Frequency of epochs to produce plots.')
 parser.add_argument('--lr', default=0.0001, type=float,
@@ -21,7 +23,9 @@ parser.add_argument('--loss', default='standard', type=str,
                     choices=['standard', 'non-saturating', 'hinge', 'wasserstein', 'wasserstein-gp', 'least-squares'],
                     help='GAN loss function to be used.')
 parser.add_argument('--spectral_norm', default=False, action='store_true',
-                    help='If set spectral norm is utilized.')
+                    help='If set use spectral norm to stabilize discriminator.')
+parser.add_argument('--clip_weights', default=0., type=float,
+                    help='If > 0., weights will be clipped to [-clip_weights, clip_weights].')
 parser.add_argument('--topk', default=False, action='store_true',
                     help='If set top-k training is utilized after 0.5 of the epochs to be performed.')
 
@@ -39,14 +43,14 @@ import loss
 
 if __name__ == '__main__':
     # Make directory to save plots
-    path = os.path.join(os.getcwd(), 'plots', args.loss + ("_top_k" if args.topk else ""))
+    path = os.path.join(os.getcwd(), 'plots', args.loss + ("_top_k" if args.topk else "") + ("_sn" if args.spectral_norm else "") + ("_clip" if args.clip_weights else ""))
     os.makedirs(path, exist_ok=True)
     # Init hyperparameters
-    fixed_generator_noise: torch.Tensor = torch.randn([args.samples // 10, args.latent_size])
+    fixed_generator_noise: torch.Tensor = torch.randn([args.samples // 10, args.latent_size], device=args.device)
     # Get data
-    data: torch.Tensor = utils.get_data(samples=args.samples)
+    data: torch.Tensor = utils.get_data(samples=args.samples).to(args.device)
     # Get generator
-    generator: nn.Module = utils.get_generator(latent_size=args.latent_size, use_spectral_norm=args.spectral_norm)
+    generator: nn.Module = utils.get_generator(latent_size=args.latent_size)
     # Get discriminator
     discriminator: nn.Module = utils.get_discriminator(use_spectral_norm=args.spectral_norm)
     # Init Loss function
@@ -83,34 +87,38 @@ if __name__ == '__main__':
     for epoch in range(args.epochs):  # type: int
         # Update progress bar
         progress_bar.update(n=1)
-        # Shuffle data
-        data = data[torch.randperm(data.shape[0])]
-        for index in range(0, args.samples, args.batch_size):  # type:int
-            # Get batch
-            batch: torch.Tensor = data[index:index + args.batch_size]
+        # Update discriminator more often than generator to train it till optimality and get more reliable gradients of Wasserstein
+        for _ in range(args.d_updates):  # type: int
+            # Shuffle data
+            data = data[torch.randperm(data.shape[0], device=args.device)]
+            for index in range(0, args.samples, args.batch_size):  # type:int
+                # Get batch
+                batch: torch.Tensor = data[index:index + args.batch_size]
+                # Get noise for generator
+                noise: torch.Tensor = torch.randn([args.batch_size, args.latent_size], device=args.device)
+                # Optimize discriminator
+                discriminator_optimizer.zero_grad()
+                generator_optimizer.zero_grad()
+                with torch.no_grad():
+                    fake_samples: torch.Tensor = generator(noise)
+                prediction_real: torch.Tensor = discriminator(batch)
+                prediction_fake: torch.Tensor = discriminator(fake_samples)
+                if isinstance(loss_discriminator, loss.WassersteinGANLossGPDiscriminator):
+                    loss_d: torch.Tensor = loss_discriminator(prediction_real, prediction_fake, discriminator, batch,
+                                                            fake_samples)
+                else:
+                    loss_d: torch.Tensor = loss_discriminator(prediction_real, prediction_fake)
+                loss_d.backward()
+                discriminator_optimizer.step()
+
+                # Clip weights to enforce Lipschitz constraint as proposed in Wasserstein GAN paper
+                if args.clip_weights > 0:
+                    with torch.no_grad():
+                        for param in discriminator.parameters():
+                            param.clamp_(-args.clip_weights, args.clip_weights)
+
             # Get noise for generator
-            noise: torch.Tensor = torch.randn([args.batch_size, args.latent_size])
-            # Data to device
-            batch = batch.to(args.device)
-            noise = noise.to(args.device)
-            # Optimize discriminator
-            discriminator_optimizer.zero_grad()
-            generator_optimizer.zero_grad()
-            with torch.no_grad():
-                fake_samples: torch.Tensor = generator(noise)
-            prediction_real: torch.Tensor = discriminator(batch)
-            prediction_fake: torch.Tensor = discriminator(fake_samples)
-            if isinstance(loss_discriminator, loss.WassersteinGANLossGPDiscriminator):
-                loss_d: torch.Tensor = loss_discriminator(prediction_real, prediction_fake, discriminator, batch,
-                                                          fake_samples)
-            else:
-                loss_d: torch.Tensor = loss_discriminator(prediction_real, prediction_fake)
-            loss_d.backward()
-            discriminator_optimizer.step()
-            # Get noise for generator
-            noise: torch.Tensor = torch.randn([args.batch_size, args.latent_size])
-            # Data to device
-            noise = noise.to(args.device)
+            noise: torch.Tensor = torch.randn([args.batch_size, args.latent_size], device=args.device)
             # Optimize generator
             discriminator_optimizer.zero_grad()
             generator_optimizer.zero_grad()
@@ -128,9 +136,9 @@ if __name__ == '__main__':
         # Plot samples of generator
         if ((epoch + 1) % args.plot_frequency) == 0:
             generator.eval()
-            generator_samples = generator(fixed_generator_noise.to(args.device))
+            generator_samples = generator(fixed_generator_noise)
             generator_samples = generator_samples.cpu().detach().numpy()
-            plt.scatter(data[::10, 0], data[::10, 1], color='blue', label='Samples from $p_{data}$', s=2, alpha=0.5)
+            plt.scatter(data[::10, 0].cpu(), data[::10, 1].cpu(), color='blue', label='Samples from $p_{data}$', s=2, alpha=0.5)
             plt.scatter(generator_samples[:, 0], generator_samples[:, 1], color='red',
                         label='Samples from generator $G$', s=2, alpha=0.5)
             plt.legend(loc=1)
