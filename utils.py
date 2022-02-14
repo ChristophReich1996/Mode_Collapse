@@ -6,23 +6,12 @@ from torch.nn.utils import spectral_norm
 import numpy as np
 
 
-def get_generator(latent_size: int, use_spectral_norm: bool) -> nn.Module:
+def get_generator(latent_size: int) -> nn.Module:
     """
     Returns the generator network.
     :param latent_size: (int) Size of the latent input vector
-    :param use_spectral_norm: (bool) If true spectral norm is utilized
     :return: (nn.Module) Simple feed forward neural network with three layers,
     """
-    if use_spectral_norm:
-        return nn.Sequential(spectral_norm(nn.Linear(latent_size, 256, bias=True)),
-                             nn.LeakyReLU(),
-                             spectral_norm(nn.Linear(256, 256, bias=True)),
-                             nn.LeakyReLU(),
-                             spectral_norm(nn.Linear(256, 256, bias=True)),
-                             nn.LeakyReLU(),
-                             spectral_norm(nn.Linear(256, 256, bias=True)),
-                             nn.Tanh(),
-                             spectral_norm(nn.Linear(256, 2, bias=True)))
     return nn.Sequential(nn.Linear(latent_size, 256, bias=True),
                          nn.LeakyReLU(),
                          nn.Linear(256, 256, bias=True),
