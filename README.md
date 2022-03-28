@@ -1,4 +1,7 @@
 # Mode Collapse Example
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ChristophReich1996/Mode_Collapse/blob/master/LICENSE)
+
 This repository showcases the mode collapse problem of GANs for different loss functions on a 2D toy example distribution.
 
 <table>
