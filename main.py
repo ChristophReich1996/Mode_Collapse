@@ -87,11 +87,11 @@ if __name__ == '__main__':
     for epoch in range(args.epochs):  # type: int
         # Update progress bar
         progress_bar.update(n=1)
-        # Update discriminator more often than generator to train it till optimality and get more reliable gradients of Wasserstein
-        for _ in range(args.d_updates):  # type: int
+        for index in range(0, args.samples, args.batch_size):  # type:int
             # Shuffle data
             data = data[torch.randperm(data.shape[0], device=args.device)]
-            for index in range(0, args.samples, args.batch_size):  # type:int
+            # Update discriminator more often than generator to train it till optimality and get more reliable gradients of Wasserstein
+            for _ in range(args.d_updates):  # type: int
                 # Get batch
                 batch: torch.Tensor = data[index:index + args.batch_size]
                 # Get noise for generator
